@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 
 ### other django imports
-from django.core.mail import send_mail
 from django.utils.timezone import now
 
 ### settings import 
@@ -11,15 +10,13 @@ from django.conf import settings
 
 ### python simple modules import 
 
-from uuid import uuid5
+from uuid import uuid4
 from datetime import timedelta
-
-
 # Create your models here.
 
 ## import form utils 
 
-from .utils import UserManager
+from .utils import UserManager 
 
 
 class User(AbstractBaseUser):
@@ -50,11 +47,6 @@ class User(AbstractBaseUser):
         blank=True
     )
 
-    is_verified = models.BooleanField(
-        verbose_name='email verified',
-        default=False,
-        
-    )
 
     ### this tags is for implimentation of LLMs
 
@@ -75,24 +67,13 @@ class User(AbstractBaseUser):
         super().clean()
         self.email = self.__class__.objects.normalize_email(self.email)
 
-    def email_user(self,subject,message,from_email=None,**kwargs):
-        """ sending the email to the user """
-        send_mail(subject,message,from_email,[self.email],**kwargs)
-
+    
     def verified(self):
         """ to set the varification true"""
         self.verified_user = True
         self.save()
 
-    def send_verificationURL(self,verificationURL:str):
-        """ for verification email to the user """
-        message = f'Welcome there,\n I personally welcome you to start using our blog service\n\nFor verification please click on the link :{verificationURL}\n Thank you.\nWe love to have you.\nRegards:\nSourabh Sheokand\nMaintainer of the wesite.\n'
-        subject = 'Verification for Portfolio website'
-        try:
-            self.email_user(subject,message,settings.EMAIL_HOST_USER,fail_silently=False)
-            return True
-        except: 
-            return False
+    
         
 
 class Blog(models.Model):
@@ -150,7 +131,7 @@ class ValidationIDs(models.Model):
 
     id = models.UUIDField(
         verbose_name='verification code',
-        default=uuid5,
+        default=uuid4,
         unique=True,
         primary_key=True,
     )
@@ -160,17 +141,16 @@ class ValidationIDs(models.Model):
         auto_now_add=True
     )
 
-    user = models.ForeignKey(
+    user = models.OneToOneField(
         to=User,
         on_delete=models.CASCADE
     )
 
 
-    def validate(self,user:User) -> bool:
+    def validate(self) -> bool:
         if now - self.time_of_creation > timedelta(minutes=15):
             self.delete()
             return False
-        if self.user == user:
-            self.delete()
-            return True
-        return False
+        self.delete()
+        self.user.verified()
+        return True

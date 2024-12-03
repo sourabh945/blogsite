@@ -1,0 +1,80 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlogSite</title>
+    <link rel="stylesheet" href="{% static 'login/css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'login/css/card.css' %}">
+    <script src="{% static 'login/js/main.js' %}"></script>
+    <!-- <script src="{% static 'login/js/height.js' %}"></script> -->
+</head>
+<body>
+    <div class="container" id="container">
+        <div class="card" id="card">
+            <div class="card-front" id="card-front">
+                <h1 id="heading-s" class="heading-s">hello</h1>
+                <div id="signup-form">
+                    <form action="{% url 'signup' %}" method="post">
+                        {% csrf_token %}
+                        {{ signup_form.as_div }}
+                        <button action="submit">Sign Up</button>
+                    </form>
+                </div>
+                <div id="signup-waring-container">
+                    <ul id="signup-waring-list"></ul>
+                </div>
+                <div id="signup-errors-containers">
+                    {% if messages %}
+                        <h3 id="signup-errors-title">Errors:</h3>
+                        <ul id="signup-errors-list">
+                            {% for message in messages %}
+                                {% if "signup error" in message.tags %}
+                                    <li> {{ message }}</li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>   
+                    {% endif %}
+                </div>
+                <div id="signup-flip-card">
+                    <button id="signup-flip-button">flip to Login</button>
+                </div>
+            </div>
+<!--             
+            next card
+            
+            -->
+            <div class="card-back" id="card-back">
+                <h1 id="heading-l" class="heading-l"></h1>
+                <div id="login-form">
+                    <form action="{% url 'login' %}" method="post">
+                        {% csrf_token %}
+                        {{ login_form.as_div }}
+                        <button action="submit">Log In</button>
+                    </form>
+                </div>
+                <div id="login-waring-container">
+                    <ul id="login-waring-list"></ul>
+                </div>
+                <div id="login-errors-containers">
+                    {% if messages %}
+                        <h3 id="login-errors-title">Errors:</h3>
+                        <ul id="login-errors-list">
+                            {% for message in messages %}
+                                {% if "login error" in message.tags %}
+                                    <li> {{ message }}</li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+                <div id="login-flip-card">
+                    <button id="login-flip-button">flip to Sign Up</button>
+                </div>
+            </div>
+        </div>
+        
+    </div>                
+</body>
+</html>

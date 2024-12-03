@@ -28,7 +28,7 @@ class CustomeUserManager(BaseUserManager):
         if not validators.validate_str(username):
             raise ValidationError('Username is invalid')
         
-        email = self.normalized_email(email)
+        email = self.normalize_email(email)
 
         user = self.model(email=email,name=name,username=username,*args,**kwargs)
         user.set_password(password)
