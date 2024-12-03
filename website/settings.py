@@ -145,3 +145,21 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'core/registeration/static'),
 ]
 
+LOGIN_URL = 'login'
+
+### adding rest frame work for django
+
+INSTALLED_APPS += [
+    'rest_framework',
+    'rest_framework.authtoken',
+]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',  
+        'rest_framework.authentication.SessionAuthentication',  
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',  
+    ],
+}

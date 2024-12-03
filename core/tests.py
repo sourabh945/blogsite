@@ -1,28 +1,53 @@
-
 from django.test import TestCase
-from django.core import mail
-from .models import User
-from .views import send_verification_email  # Assuming the email sending function is in views.py
-import asyncio
+from django.urls import reverse
+from rest_framework.test import APIClient
+from rest_framework.authtoken.models import Token
 
-class SendVerificationEmailTest(TestCase):
+
+from .models import User , Blog
+
+class ApiTest(TestCase):
 
     def setUp(self):
-        # Setup user for testing
-        self.user = User.objects.create(username='testuser', name='Test User', email='testuser@example.com', password='testpassword')
+        self.client = APIClient()
+        self.user = User.objects.create(
+            username='sourabh945',
+            name='sourabh',
+            email='sheokand.sourabh.anil@gmail.com',
+            password='12345678'
+        )
+        response = Token.objects.get_or_create(user=self.user)
+        self.token = response[0]
+        self.blog = Blog.objects.create(
+            title='test blog initial',
+            content='this is a test blog',
+            author=self.user
+        )
 
-    def test_send_verification_email(self):
-        # Call the asynchronous send email function
-        asyncio.run(self.user.send_verification_email(self.user.email))  # Assuming the function is asynchronous
+    def test_user_model(self):
+        self.assertEqual(self.user.username,'sourabh945')
+        self.assertEqual(self.user.name,'sourabh')
+        self.assertEqual(self.user.email,'sheokand.sourabh.anil@gmail.com')
 
-        # Check if the email was sent
-        self.assertEqual(len(mail.outbox), 1)  # Only 1 email should be sent
-        email = mail.outbox[0]
 
-        # Check email subject and body
-        self.assertEqual(email.subject, 'Email Verification')
-        self.assertIn('Please click the link to verify your email.', email.body)
+    def test_add_blog(self):
+        blog = {
+            'title':'test title',
+            'content':'this is a test blog for test'
+        }
+        response = self.client.post('/api/posts/',data=blog,HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(response.status_code,201)
+        self.assertNotEqual(response.data['id'],self.blog.id)
 
-        # Check if the email was sent to the correct recipient
-        self.assertEqual(email.to, [self.user.email])
 
+    def test_get_blog_by_id(self):
+        
+        response = self.client.get(f'/api/posts/{self.blog.id}/',HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(response.status_code,200)
+        self.assertEqual(response.data['title'],'test blog initial')
+        self.assertEqual(response.data['content'],'this is a test blog')
+
+    def test_get_all_blogs(self):
+        response = self.client.get('/api/posts/',HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        self.assertEqual(response.status_code,200)
+        self.assertEqual(len(response.data),1)
