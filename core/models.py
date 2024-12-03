@@ -120,37 +120,3 @@ class Blog(models.Model):
         blank=True
     )
 
-
-
-### System modeles: These models are use for store the system variable for short time period only 
-
-### please don't change any thing here whole system can f*cked up 
-
-
-class ValidationIDs(models.Model):
-
-    id = models.UUIDField(
-        verbose_name='verification code',
-        default=uuid4,
-        unique=True,
-        primary_key=True,
-    )
-
-    time_of_creation = models.DateTimeField(
-        verbose_name='time of creation',
-        auto_now_add=True
-    )
-
-    user = models.OneToOneField(
-        to=User,
-        on_delete=models.CASCADE
-    )
-
-
-    def validate(self) -> bool:
-        if now - self.time_of_creation > timedelta(minutes=15):
-            self.delete()
-            return False
-        self.delete()
-        self.user.verified()
-        return True
