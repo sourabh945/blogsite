@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractBaseUser
 
 ### other django imports
 from django.core.mail import send_mail
@@ -22,7 +22,7 @@ from datetime import timedelta
 from .utils import UserManager
 
 
-class User(AbstractUser):
+class User(AbstractBaseUser):
 
     email = models.EmailField(
         verbose_name='author email address',
@@ -146,7 +146,7 @@ class Blog(models.Model):
 ### please don't change any thing here whole system can f*cked up 
 
 
-class ValidationIDs(models.Models):
+class ValidationIDs(models.Model):
 
     id = models.UUIDField(
         verbose_name='verification code',
