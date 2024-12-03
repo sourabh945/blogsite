@@ -5,6 +5,10 @@ from django.contrib.auth.models import AbstractUser
 from django.core.mail import send_mail
 from django.utils.timezone import now
 
+### settings import 
+
+from django.conf import settings
+
 ### python simple modules import 
 
 from uuid import uuid5
