@@ -56,7 +56,7 @@ def posts(request):
         paginator.page_size = int(page_size)
         paginator.max_page_size = settings.MAX_PAGE_SIZE
 
-        queryset = Blog.objects.all()
+        queryset = Blog.objects.all().order_by('id')
 
         paginated_queryset = paginator.paginate_queryset(queryset=queryset,request=request)
 

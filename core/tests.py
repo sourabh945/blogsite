@@ -6,6 +6,8 @@ from rest_framework.authtoken.models import Token
 
 from .models import User , Blog
 
+from .llm import get_tags
+
 class ApiTest(TestCase):
 
     def setUp(self):
@@ -65,3 +67,42 @@ class ApiTest(TestCase):
         self.assertEqual(response.status_code,200)
         self.assertEqual(len(response.data['results']),page_size)
         self.assertEqual(count,int(response.data['count']/page_size) + int(response.data['count']%page_size))
+
+
+class LLM_test(TestCase):
+
+    def setUp(self):
+        self.test_blog = """Introduction to Quantum Computing
+                            Quantum computing is a revolutionary field of science and technology that leverages the principles of quantum mechanics to perform computations. Unlike classical computers, which process data in binary (0s and 1s), quantum computers use qubits—quantum bits that can exist in multiple states simultaneously due to superposition. This capability allows quantum computers to solve complex problems much faster than traditional computers.
+
+                            How Quantum Computing Works
+                            Qubits and Superposition: Qubits can represent both 0 and 1 simultaneously, thanks to the quantum property of superposition. This allows quantum computers to process vast amounts of data in parallel.
+                            Entanglement: Quantum entanglement enables qubits to be interconnected in such a way that the state of one qubit can instantly influence another, even if they are far apart. This boosts computational power exponentially.
+                            Quantum Gates: Just like classical computers use logic gates, quantum computers use quantum gates to manipulate qubit states, enabling complex operations.
+                            Applications of Quantum Computing
+                            Cryptography: Quantum computing poses a threat to traditional cryptographic systems like RSA, as it can factor large numbers efficiently. Post-quantum cryptography is being developed to counteract this threat.
+                            Drug Discovery: Simulating molecular interactions is exponentially faster, enabling breakthroughs in pharmaceutical research.
+                            Optimization Problems: Quantum algorithms can solve optimization problems in logistics, finance, and supply chain management faster than classical counterparts.
+                            Challenges in Quantum Computing
+                            Error Rates: Qubits are highly sensitive to environmental disturbances, causing frequent errors. Error correction is a major area of research.
+                            Scalability: Building large-scale quantum computers with many stable qubits is a significant engineering challenge.
+                            Cost and Accessibility: Quantum computers are expensive to develop and maintain, limiting access to large institutions and research labs.
+                            Future Prospects
+                            The future of quantum computing looks promising, with tech giants like IBM, Google, and Microsoft investing heavily in quantum research. As technology advances, we may see quantum computing becoming a part of everyday applications, revolutionizing industries like healthcare, finance, and artificial intelligence.
+                            """
+        self.user = User.objects.create(
+            username='sourabh9',
+            name='sourabh',
+            email='sheokand.sourabh@gmail.com',
+            password='12345678'
+        )
+        response = Token.objects.get_or_create(user=self.user)
+        self.token = response[0]
+        self.blog = Blog.objects.create(
+            title='test blog initial',
+            content='this is a test blog',
+            author=self.user
+        )
+
+    def test_direct_llm(self):
+        tags = get_tags(self.test_blog)

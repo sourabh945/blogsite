@@ -168,3 +168,8 @@ REST_FRAMEWORK = {
 
 DEFAULT_PAGE_SIZE = 20
 MAX_PAGE_SIZE = 100
+
+
+### API keys
+
+TEXTRAZOR_API_KEY = os.environ.get('textrazor_api_key')

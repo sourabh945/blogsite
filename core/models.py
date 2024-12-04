@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
+from django.dispatch import receiver
 
 ### other django imports
 from django.utils.timezone import now
@@ -8,15 +9,13 @@ from django.utils.timezone import now
 
 from django.conf import settings
 
-### python simple modules import 
+## import from utils 
 
-from uuid import uuid4
-from datetime import timedelta
-# Create your models here.
+from .utils import UserManager
 
-## import form utils 
+### import from the llm 
 
-from .utils import UserManager 
+from .llm import get_tags
 
 
 class User(AbstractBaseUser):
@@ -46,9 +45,6 @@ class User(AbstractBaseUser):
         null=True,
         blank=True
     )
-
-
-    ### this tags is for implimentation of LLMs
 
     tags = models.JSONField(
         verbose_name='tags for blog that user like',
@@ -109,14 +105,12 @@ class Blog(models.Model):
         max_length=5000
     )
 
-    ### add the default function as the ai api function that calculates the flags take top 5 at max
-
-    """
-    """
-
     tags = models.JSONField(
         verbose_name='tags of the blog',
-        default=list,
         blank=True
     )
 
+@receiver(signal=models.signals.pre_save,sender=Blog)
+def set_tags(sender,instance,*args,**kwargs):
+    if not instance.tags:
+        instance.tags = get_tags(instance.content)
