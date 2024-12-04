@@ -25,12 +25,6 @@ class ApiTest(TestCase):
             content='this is a test blog',
             author=self.user
         )
-        for i in range(10):
-            Blog.objects.create(
-                title=f'test blog {i}',
-                content=f'this is a test blog {i}',
-                author=self.user
-            )
 
     def test_user_model(self):
         self.assertEqual(self.user.username,'sourabh945')
@@ -56,6 +50,12 @@ class ApiTest(TestCase):
         self.assertEqual(response.data['content'],'this is a test blog')
 
     def test_get_all_blogs(self):
+        for i in range(10):
+            Blog.objects.create(
+                title=f'test blog {i}',
+                content=f'this is a test blog {i}',
+                author=self.user
+            )
         page_size = 1
         count = 1
         response = self.client.get(f'/api/posts/?page_size={page_size}',HTTP_AUTHORIZATION=f'Token {self.token.key}')

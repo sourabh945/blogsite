@@ -170,6 +170,28 @@ DEFAULT_PAGE_SIZE = 20
 MAX_PAGE_SIZE = 100
 
 
-### API keys
+### LLM API configs
 
-TEXTRAZOR_API_KEY = os.environ.get('textrazor_api_key')
+LLM_API_KEY = os.environ.get('textrazor_api_key')
+
+LLM_API_URL = 'https://api.cohara.ai/v1/chat'
+
+LLM_MODEL = 'command-r-08-2024'
+
+TAG_LIST = [
+    "Technology", "Science", "Innovation", "Research", "Education", 
+    "Artificial Intelligence (AI)", "Machine Learning", "Quantum Computing", 
+    "Robotics", "Space Exploration", "Microbiology", "Biotechnology", 
+    "Genetics", "Medicine", "Health Tech", "Mental Health", "Nutrition", 
+    "Fitness", "Wellness", "Environmental Science", "Travel", "Food", 
+    "Sustainability", "Personal Development", "Productivity", "Creativity", 
+    "Minimalism", "Fashion", "Photography", "Writing", "Entrepreneurship", 
+    "Startups", "E-commerce", "Digital Marketing", "Blockchain", 
+    "Cryptocurrency", "Fintech", "Leadership", "Economics", "Investments", 
+    "Web Development", "Software Engineering", "Python", "JavaScript", 
+    "Data Science", "Cybersecurity", "Open Source", "DevOps", 
+    "Internet of Things (IoT)", "Cloud Computing"
+]
+
+
+LLM_PRE_PROMPT = f'can you characterize the given input by assign them atmost five tags from the following tags list. And return the output just tags seperated by comman nothing else. Tags List: {str(TAG_LIST)}',
