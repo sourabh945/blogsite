@@ -190,7 +190,7 @@ TAG_LIST = [
     "Cryptocurrency", "Fintech", "Leadership", "Economics", "Investments", 
     "Web Development", "Software Engineering", "Python", "JavaScript", 
     "Data Science", "Cybersecurity", "Open Source", "DevOps", 
-    "Internet of Things (IoT)", "Cloud Computing"
+    "Internet of Things (IoT)", "Cloud Computing","junk","random","personal"
 ]
 
 
