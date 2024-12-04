@@ -8,15 +8,19 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework import status
-
+from rest_framework.pagination import PageNumberPagination
 
 ### models imports 
 
-from ..models import Blog , User
+from ..models import Blog 
 
 ### utils imports
 
 from .utils.formatter import Blog_foramtter
+
+### import form settings 
+
+from django.conf import settings
 
 ### token generator 
 class AuthToken(ObtainAuthToken):
@@ -46,9 +50,20 @@ def get_blog_by_id(request,id):
 @permission_classes([IsAuthenticated])
 def posts(request):
     if request.method=="GET":
-        blogs = Blog.objects.all()
-        seralizer = Blog_foramtter(blogs,many=True)
-        return Response(seralizer.data,status=status.HTTP_200_OK)
+        
+        page_size = request.query_params.get('page_size',settings.DEFAULT_PAGE_SIZE)
+        paginator= PageNumberPagination()
+        paginator.page_size = int(page_size)
+        paginator.max_page_size = settings.MAX_PAGE_SIZE
+
+        queryset = Blog.objects.all()
+
+        paginated_queryset = paginator.paginate_queryset(queryset=queryset,request=request)
+
+        seralizer = Blog_foramtter(paginated_queryset,many=True)
+
+        return paginator.get_paginated_response(seralizer.data)
+
     else:
         try:
             data = request.data

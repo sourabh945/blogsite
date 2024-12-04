@@ -23,6 +23,12 @@ class ApiTest(TestCase):
             content='this is a test blog',
             author=self.user
         )
+        for i in range(10):
+            Blog.objects.create(
+                title=f'test blog {i}',
+                content=f'this is a test blog {i}',
+                author=self.user
+            )
 
     def test_user_model(self):
         self.assertEqual(self.user.username,'sourabh945')
@@ -48,6 +54,14 @@ class ApiTest(TestCase):
         self.assertEqual(response.data['content'],'this is a test blog')
 
     def test_get_all_blogs(self):
-        response = self.client.get('/api/posts/',HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        page_size = 1
+        count = 1
+        response = self.client.get(f'/api/posts/?page_size={page_size}',HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        while response.data['next'] is not None:
+            response = self.client.get(response.data['next'],HTTP_AUTHORIZATION=f'Token {self.token.key}')
+            self.assertEqual(response.status_code,200)
+            self.assertEqual(len(response.data['results']),page_size)
+            count += 1
         self.assertEqual(response.status_code,200)
-        self.assertEqual(len(response.data),1)
+        self.assertEqual(len(response.data['results']),page_size)
+        self.assertEqual(count,int(response.data['count']/page_size) + int(response.data['count']%page_size))
