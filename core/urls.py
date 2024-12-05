@@ -15,3 +15,10 @@ urlpatterns += reg_urls
 from .apis.urls import urlpatterns as api_urls
 
 urlpatterns += api_urls
+
+##3 importing the urls from the ui page that hold the home page and all main ui elements 
+
+from .ui.urls import urlpatterns as ui_urls
+
+
+urlpatterns += ui_urls

@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlogSite</title>
+    <link rel="stylesheet" href="{% static 'create/css/main.css' %}">
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <div class="left">
+            <button class="nav-button" onclick="homeWarning()">Home</button>
+        </div>
+        <div class="right">
+            <button class="nav-button" onclick="logoutWarning()">Logout</button>
+        </div>
+    </div>
+
+    <!-- Blog Creation Form -->
+    <div class="blog-container">
+        <h2>Create New Blog</h2>
+        <form id="blog-form" action="{% url 'create' %}">
+            {% csrf_token %}
+            <div class="form-group" action="">
+                <label for="title">Blog Title</label>
+                {{ form.title }}
+                <span id="title-count" class="word-count">126 characters left</span>
+            </div>
+
+            <div class="form-group">
+                <label for="body">Blog Body</label>
+                {{ form.content }}
+                <span id="body-count" class="word-count">5000 characters left</span>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" onclick="checkForm()">Upload</button>
+                <button type="button" onclick="clearForm()">Clear</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="{% static 'create/js/main.js' %}"></script>
+
+</body>
+</html>

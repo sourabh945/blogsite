@@ -61,7 +61,9 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
 
-            os.path.join(BASE_DIR,'core/registeration/templates')
+            os.path.join(BASE_DIR,'core/registeration/templates') , ### registeration page templates path
+
+            os.path.join(BASE_DIR,'core/ui/templates') , ### ui pages templates path 
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -142,7 +144,9 @@ INSTALLED_APPS += [
 AUTH_USER_MODEL = 'core.User'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'core/registeration/static'),
+    os.path.join(BASE_DIR, 'core/registeration/static'), ## login page static folder path 
+
+    os.path.join(BASE_DIR,'core/ui/static') ## ui page static folder path 
 ]
 
 LOGIN_URL = 'login'

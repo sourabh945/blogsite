@@ -1,0 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=Handlee&family=Patrick+Hand+SC&display=swap');
+
+body {
+    font-family: "Patrick Hand SC",cursive;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+body, * {
+    font-family: "Patrick Hand SC",cursive;
+}
+
+button :hover {
+    zoom:1.5;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #0073e6;
+    color: white;
+}
+
+.left, .right {
+    display: flex;
+    align-items: center;
+}
+
+.nav-button {
+    margin: 0 5px;
+    padding: 8px 16px;
+    border: none;
+    background-color: white;
+    color: #0073e6;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.blog-container {
+    max-width: 800px;
+    margin: 40px auto;
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+input, textarea {
+    width: 96%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+#id_content {
+    height: 200px;
+}
+
+.word-count {
+    font-size: 0.8em;
+    color: #888;
+}
+
+.form-actions {
+    text-align: center;
+    margin-top: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #0073e6;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px;
+}
+
+button:hover {
+    background-color: #005bb5;
+}

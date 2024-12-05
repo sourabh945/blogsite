@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Home</title>
+    <link rel="stylesheet" href="{% static 'home/css/main.css' %}">
+</head>
+<body>
+    <div class="navbar">
+        <div class="left">
+            <button class="nav-button" onclick="createBlog()">Create Blog</button>
+            <button class="nav-button" onclick="refreshPage()">Refresh</button>
+            <input type="text" class="search-bar" placeholder="Search blogs...">
+            {% csrf_token %}
+        </div>
+        <div class="right">
+            <label class="toggle-switch">
+                <input type="checkbox">
+                <span class="slider"></span>
+                <span class="toggle-label">Personalized</span>
+            </label>
+            <button class="nav-button" onclick="logout()">Logout</button>
+        </div>
+    </div>
+    
+    <div class="blog-container">
+        <div class="blog">
+            <h2 class="blog-title">Blog Title Example</h2>
+            <p class="blog-tags">Tags: Science, Technology, Research</p>
+            <div class="blog-meta">
+                <span class="blog-author">Author: John Doe</span>
+                <span class="blog-time">2 hours ago</span>
+            </div>
+        </div>
+        <!-- Repeatable Blog Structure -->
+    </div>
+
+    <div class="load-more-container">
+        <button class="load-more-button" onclick="loadMore()">Load More</button>
+    </div>
+
+    <script>
+        function createBlog() {
+            window.location.href = "{% url 'create' %}";
+        }
+        function refreshPage() {
+            location.reload();
+        }
+        function logout() {
+            window.location.href = "{% url 'logout' %}";
+        }
+        function loadMore() {
+            // Implement AJAX load more functionality here
+        }
+    </script>
+</body>
+</html>

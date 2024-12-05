@@ -16,7 +16,7 @@ from .forms import signup_form , login_form
 
 # Create your views here.
 
-HOME_PAGE = 'hello_reg'
+HOME_PAGE = 'home'
 
 @decorators.login_required
 def hello_reg(request):
