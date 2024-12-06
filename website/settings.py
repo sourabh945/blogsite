@@ -194,8 +194,23 @@ TAG_LIST = [
     "Cryptocurrency", "Fintech", "Leadership", "Economics", "Investments", 
     "Web Development", "Software Engineering", "Python", "JavaScript", 
     "Data Science", "Cybersecurity", "Open Source", "DevOps", 
-    "Internet of Things (IoT)", "Cloud Computing","junk","random","personal"
+    "Internet of Things (IoT)", "Cloud Computing","Junk","Random","Personal"
 ]
 
 
 LLM_PRE_PROMPT = f'can you characterize the given input by assign them atmost five tags from the following tags list. And return the output just tags seperated by comman nothing else. Tags List: {str(TAG_LIST)}',
+
+
+### defining the database 
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('db_name'),
+        'USER': os.environ.get('db_user'),
+        'PASSWORD': os.environ.get('db_password'),
+        'HOST': 'localhost',  # Use '127.0.0.1' if needed
+        'PORT': '5432',       # Default PostgreSQL port
+    }
+}
+

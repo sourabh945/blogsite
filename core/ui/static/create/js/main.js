@@ -1,5 +1,5 @@
-let titleInput = document.getElementById("title");
-let bodyInput = document.getElementById("body");
+let titleInput = document.getElementById("id_title");
+let bodyInput = document.getElementById("id_content");
 let titleCount = document.getElementById("title-count");
 let bodyCount = document.getElementById("body-count");
 
@@ -26,10 +26,10 @@ bodyInput.addEventListener("input", function() {
 function logoutWarning() {
     if (titleInput.value || bodyInput.value) {
         if (confirm("You have unsaved changes. Do you really want to logout?")) {
-            window.location.href = '{% url "logout" %}';
+            window.location.href = window.location.origin+'/logout/';
         }
     } else {
-        window.location.href = '{% url "logout" %}';
+        window.location.href = window.location.origin+'/logout/';
     }
 }
 
@@ -61,9 +61,15 @@ function clearForm() {
 function homeWarning() {
     if (titleInput.vaule || bodyInput.value) {
         if (confirm('You have unsaved changes. Do you really wanted to go to home page?')){
-            window.location.href="{% url 'home' %}";
+            window.location.href=window.location.origin+'/home/';
         }
     } else {
-        window.location.href="{% url 'home' %}";
+        window.location.href=window.location.origin+'/home/';
     }
 }
+
+window.addEventListener('beforeunload',() => {
+    if (titleInput.value || bodyInput.value) {
+        alert('You have unsaved changes. Are you sure you want to leave?');
+    }
+});

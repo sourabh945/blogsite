@@ -17,7 +17,7 @@ class CustomeUserManager(BaseUserManager):
         Custome class for manage_user
     """
 
-    def create_user(self,email:str,name:str,username:str,password:str,*args,**kwargs):
+    def create(self,email:str,name:str,username:str,password:str,*args,**kwargs):
         """
         This function is for creating the user
         """

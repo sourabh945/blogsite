@@ -10,7 +10,7 @@ class blogCreateForm(forms.Form):
     )
 
     content = forms.CharField(
-        max_length=126,
+        max_length=5000,
         required=True,
         widget=forms.Textarea(attrs={'placeholder':'Enter your blog here ...'})
     )

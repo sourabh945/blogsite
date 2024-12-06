@@ -77,16 +77,25 @@ body {
     transition: 0.4s;
 }
 
-input:checked+.slider {
-    background-color: #0073e6;
+
+input:checked +.slider{
+
+    /* background-color: #0073e6; */
+    background-color: rgb(52, 161, 52);
 }
 
 input:checked+.slider:before {
     transform: translateX(32px);
 }
 
-.toggle-label {
-    margin-left: 8px;
+.toggle-label-left {
+    margin-right: 2px;
+    color: white;
+}
+
+.toggle-label-right {
+    margin-left: 2px;
+    margin-right:18px;
     color: white;
 }
 
@@ -97,6 +106,12 @@ input:checked+.slider:before {
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.blog-link {
+    display: block;      /* Makes the anchor tag a block-level element */
+    text-decoration: none; /* Removes underline from the link */
+    color: inherit;       /* Inherits the text color from the parent */
 }
 
 .blog {

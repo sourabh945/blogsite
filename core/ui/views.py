@@ -1,8 +1,16 @@
-from django.shortcuts import render , HttpResponse , redirect
-from django.http import HttpResponseBadRequest , HttpResponsePermanentRedirect , HttpResponseServerError , Http404
+from django.shortcuts import render , redirect
+from django.http import HttpResponseBadRequest , HttpResponseServerError , Http404
 from django.contrib.auth.decorators import login_required
 from django.middleware.csrf import get_token
-from django.urls import reverse
+from django.db.models import Q
+
+### import settings 
+
+from django.conf import settings
+
+### rest framework imports 
+
+from rest_framework.pagination import PageNumberPagination
 
 ### forms import 
 
@@ -11,6 +19,11 @@ from .forms import blogCreateForm
 ### import models 
 
 from ..models import Blog
+
+### import utils 
+
+from .utils import BlogSerializer , BlogPaginator
+
 
 @login_required
 def home_page(request):
@@ -42,3 +55,53 @@ def blog_page(request,id):
     except Exception as error:
         print(error)
         return Http404(f'No blog is exits of id {id}')
+
+
+@login_required 
+def get_personlized_blogs(request):
+    try:
+        user_tags = request.user.tags
+
+        query = Q()
+
+        if user_tags:
+            for tag in user_tags:
+                query |= Q(tags__contains=[tag])   
+
+        paginator = BlogPaginator()
+
+        feed = Blog.objects.filter(query).distinct().order_by('date_of_pub').reverse() 
+
+        paginated_feed = paginator.paginate_queryset(queryset=feed,request=request)
+
+        seralizer = BlogSerializer(paginated_feed,many=True)
+
+        return paginator.get_paginated_response(seralizer.data)
+
+        
+    except Exception as error:
+
+        print(error)
+
+        return HttpResponseServerError('Something went wrong...')
+    
+
+@login_required 
+def get_all_blogs(request):
+    try:
+        paginator = BlogPaginator() 
+
+        feed = Blog.objects.all().order_by('date_of_pub').reverse()
+
+        paginated_feed = paginator.paginate_queryset(queryset=feed,request=request)
+
+        seralizer = BlogSerializer(paginated_feed,many=True)
+
+        return paginator.get_paginated_response(seralizer.data)
+
+        
+    except Exception as error:
+
+        print(error)
+
+        return HttpResponseServerError('Something went wrong...')

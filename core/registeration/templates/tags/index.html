@@ -1,0 +1,86 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlogSite</title>
+    <link rel="stylesheet" href="{% static 'tags/css/main.css' %}">
+</head>
+<body>
+    <div class="tag-selection-container">
+        <h1>Choose your interests</h1>
+        <p>Select the topics you're interested in to personalize your experience.</p>
+        <div class="tags-container">
+            {% for tag in tags %}
+            {% if tag in user_tags %}
+            <div class="tag selected" data-tag="{{ tag }}">
+                {{ tag }}
+            </div>
+            {% else %}
+            <div class="tag" data-tag="{{ tag }}" id="{{tag}}">
+                {{ tag }}
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        <button id="submit-btn" disabled>Save</button>
+        <button id="home-btn" onclick="home()">Home</button>
+    </div>
+    {% for tag in user_tags %}
+        <input type="hidden" class="user_tag" value="{{tag}}">
+    {% endfor %}
+    <script>
+
+        const selectedTags = new Set();
+        const tags = document.querySelectorAll('.tag');
+        const submitButton = document.getElementById('submit-btn');
+        const userTag = document.querySelectorAll('.user_tag');
+        const homeBtn = document.getElementById('home-btn');
+
+        function home() {
+            window.location.href = "{% url 'home' %}";
+        }
+
+
+        userTag.forEach(tag => {
+            const tagName = tag.value; 
+            selectedTags.add(tagName);
+        })
+
+
+        tags.forEach(tag => {
+            tag.addEventListener('click', () => {
+                const tagName = tag.getAttribute('data-tag');
+                if (selectedTags.has(tagName)) {
+                    selectedTags.delete(tagName);
+                    tag.classList.remove('selected');
+                } else {
+                    selectedTags.add(tagName);
+                    tag.classList.add('selected');
+                }
+                submitButton.disabled = selectedTags.size === 0;
+            });
+        });
+
+        submitButton.addEventListener('click', () => {
+            fetch("{% url 'tags' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+                body: JSON.stringify({ tags: Array.from(selectedTags) }),
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = "{% url 'home' %}"; // Redirect after saving
+                } else {
+                    alert('Failed to save tags. Please try again.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>

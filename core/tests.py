@@ -8,6 +8,16 @@ from .models import User , Blog
 
 from .llm import get_tags
 
+import json
+
+from django.conf import settings
+
+from random import choices , choice
+
+from django.contrib.auth import login
+
+tl = settings.TAG_LIST
+
 class ApiTest(TestCase):
 
     def setUp(self):
@@ -16,14 +26,16 @@ class ApiTest(TestCase):
             username='sourabh945',
             name='sourabh',
             email='sheokand.sourabh.anil@gmail.com',
-            password='12345678'
+            password='12345678',
+            tags=choices(tl,k=5)
         )
         response = Token.objects.get_or_create(user=self.user)
         self.token = response[0]
         self.blog = Blog.objects.create(
             title='test blog initial',
             content='this is a test blog',
-            author=self.user
+            author=self.user,
+            tags=choices(tl,k=5)
         )
 
     def test_user_model(self):
@@ -54,7 +66,8 @@ class ApiTest(TestCase):
             Blog.objects.create(
                 title=f'test blog {i}',
                 content=f'this is a test blog {i}',
-                author=self.user
+                author=self.user,
+                tags=choices(tl,k=5)
             )
         page_size = 1
         count = 1
@@ -106,3 +119,47 @@ class LLM_test(TestCase):
 
     def test_direct_llm(self):
         tags = get_tags(self.test_blog)
+
+
+class UI_COMPONENTS_TEST(TestCase):
+
+    def setUp(self):
+        self.client = APIClient()
+        self.user1 = User.objects.create(
+            name='sourabh',
+            username='sourabh945',
+            email='sheokand.sourabh@gmail.com',
+            password='12345678',
+            tags = choices(tl,k=5)
+        )
+        self.user2 = User.objects.create(
+            name='sourabh2',
+            username='sourabh9452',
+            email='sheokand.sourabh2@gmail.com',
+            password='12345678',
+            tags = choices(tl,k=5)
+        )
+        self.blogs = [] 
+        for i in range(0,20):
+            self.blogs.append(Blog.objects.create(
+                title=f'title for text {i}',
+                content=f'content for text {i}',
+                author=choice([self.user1,self.user2]),
+                tags=choices(tl,k=5)
+            ))
+
+    def test_feeds(self):
+        response = self.client.login(username=self.user1.username,password='12345678')
+        self.assertEqual(response,True)
+        response = self.client.get(reverse('feed'))
+        self.assertEqual(response.status_code,200)
+        def findintersection(tags):
+            return [i for i in tags if i in self.user1.tags]
+        data = json.loads(response.content.decode('utf-8'))
+        for i in data['results']:
+            self.assertNotEqual(len(findintersection(i['tags'])),0)
+
+    def test_home_page(self):
+        self.client.login(username=self.user1.username,password='12345678')
+        response = self.client.get(reverse('home'))
+        self.assertEqual(response.status_code,200)

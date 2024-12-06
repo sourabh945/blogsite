@@ -69,8 +69,8 @@ class User(AbstractBaseUser):
         self.verified_user = True
         self.save()
 
-    
-        
+
+
 
 class Blog(models.Model):
 
@@ -93,7 +93,7 @@ class Blog(models.Model):
         related_name='author'
     )
 
-    date_of_pub = models.DateField(
+    date_of_pub = models.DateTimeField(
         verbose_name='date of publication',
         auto_now_add=True
     )
@@ -106,11 +106,13 @@ class Blog(models.Model):
     )
 
     tags = models.JSONField(
-        verbose_name='tags of the blog',
-        blank=True
+        verbose_name='tags',
+        blank=True,
     )
 
 @receiver(signal=models.signals.pre_save,sender=Blog)
 def set_tags(sender,instance,*args,**kwargs):
     if not instance.tags:
         instance.tags = get_tags(instance.content)
+
+

@@ -12,4 +12,8 @@ urlpatterns = [
 
     path('blog/<str:id>/',blog_page,name='blog'),
 
+    path('feed/',get_personlized_blogs,name='feed'),
+
+    path('feed_all/',get_all_blogs,name='all_feed')
+
 ]

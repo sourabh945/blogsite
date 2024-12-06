@@ -22,3 +22,13 @@ from .ui.urls import urlpatterns as ui_urls
 
 
 urlpatterns += ui_urls
+
+
+### adding index page url
+
+from django.urls import path 
+from .views import index
+
+urlpatterns += [
+    path('',index,name='index'),
+]

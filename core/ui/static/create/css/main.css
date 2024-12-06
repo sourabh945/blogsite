@@ -58,6 +58,7 @@ h2 {
 
 input, textarea {
     width: 96%;
+    font-size: x-large;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -86,8 +87,4 @@ button {
     border-radius: 5px;
     cursor: pointer;
     margin: 5px;
-}
-
-button:hover {
-    background-color: #005bb5;
 }
