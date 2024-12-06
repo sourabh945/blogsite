@@ -16,7 +16,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,12 +24,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('django_key')
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [os.getenv("RENDER_EXTERNAL_HOSTNAME","")]
 
 
 # Application definition
@@ -41,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
 ]
 
@@ -52,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware'
 ]
 
 ROOT_URLCONF = 'website.urls'
@@ -146,8 +147,15 @@ AUTH_USER_MODEL = 'core.User'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'core/registeration/static'), ## login page static folder path 
 
-    os.path.join(BASE_DIR,'core/ui/static') ## ui page static folder path 
+    os.path.join(BASE_DIR,'core/ui/static') ## ui page static folder 
 ]
+
+### whitenoise install
+
+STATICFILES_STOREAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+
+
 
 LOGIN_URL = 'login'
 
@@ -176,7 +184,7 @@ MAX_PAGE_SIZE = 100
 
 ### LLM API configs
 
-LLM_API_KEY = os.environ.get('textrazor_api_key')
+LLM_API_KEY = os.environ.get('LLM_API_KEY')
 
 LLM_API_URL = 'https://api.cohara.ai/v1/chat'
 
@@ -203,14 +211,37 @@ LLM_PRE_PROMPT = f'can you characterize the given input by assign them atmost fi
 
 ### defining the database 
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.environ.get('db_name'),
+#         'USER': os.environ.get('db_user'),
+#         'PASSWORD': os.environ.get('db_password'),
+#         'HOST': 'localhost',  # Use '127.0.0.1' if needed
+#         'PORT': '5432',       # Default PostgreSQL port
+#     }
+# }
+
+import dj_database_url
+
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('db_name'),
-        'USER': os.environ.get('db_user'),
-        'PASSWORD': os.environ.get('db_password'),
-        'HOST': 'localhost',  # Use '127.0.0.1' if needed
-        'PORT': '5432',       # Default PostgreSQL port
-    }
+    'default': dj_database_url.config(default='postgresql://postgres:postgres@localhost/postgres')
 }
 
+
+### ssl and tsl
+
+SECURE_HSTS_SECONDS = 31536000  # Enable HTTP Strict Transport Security
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+
+## middle ware settings 
+
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
