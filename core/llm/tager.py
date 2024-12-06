@@ -33,7 +33,7 @@ async def fetch_tags(text):
         
 def get_tags(conent:str):
     try:
-        # return filter(asyncio.run(fetch_tags(conent)))
-        return choices(settings.TAG_LIST,k=5)
+        return filter(asyncio.run(fetch_tags(conent)))
+        # return choices(settings.TAG_LIST,k=5)
     except Exception as e: 
         return []
