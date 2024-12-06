@@ -5,34 +5,33 @@ from django.conf import settings
 
 from .utils import filters
 
-from tenacity import retry, stop_after_attempt, wait_fixed
+### import other modules 
 
-import requests
+import aiohttp 
+import asyncio 
 
-@retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
-def fetch_tags(text):
+async def fetch_tags(text):
+    async with aiohttp.ClientSession() as session:
+        try:
+            tags = await session.post(settings.LLM_API_URL,
+                                      headers={
+                                          "Authorization": f"Bearer {settings.LLM_API}",
+                                          "Content-Type": "application/json",
+                                          "Accept": "application/json",
+                                      },
+                                      json={
+                                          "model": settings.LLM_MODEL,
+                                          "preamble":settings.PRE_PROMPT,
+                                          "message":text
+                                      })
+            
+            return tags.json()
+        except Exception as error:
+            # Log the error
+            raise  error
+        
+def get_tags(conent:str):
     try:
-        return requests.post(
-            url=settings.LLM_API_URL,
-            headers={
-                "Authorization": f"Bearer {settings.LLM_API_KEY}",
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-            },
-            json={
-                "model": settings.LLM_MODEL,
-                "preamble":settings.PRE_PROMPT,
-                "message":text
-            },
-        )
-    
-    except Exception as e:
-        # Log the error
-        raise  e
-
-
-def get_tags(content: str):
-    try:
-        return filters.filter_tags(fetch_tags(content))
+        return asyncio.run(fetch_tags(conent))
     except Exception as e: 
-        return [] 
+        return []
