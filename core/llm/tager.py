@@ -34,7 +34,12 @@ async def fetch_tags(text):
         
 def get_tags(conent:str):
     try:
-        return StreamingHttpResponse(filter(asyncio.run(fetch_tags(conent))))
+        return StreamingHttpResponse(filter.filter_tags(asyncio.run(fetch_tags(conent))))
         # return choices(settings.TAG_LIST,k=5)
     except Exception as e: 
         return []
+    
+# async def apply_tags(blog):
+#     tags = await fetch_tags(blog.content)
+#     blog.tags = filters.(tags)
+#     blog.save()
