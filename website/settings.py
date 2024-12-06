@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import os
+import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -152,7 +153,7 @@ STATICFILES_DIRS = [
 
 ### whitenoise install
 
-STATICFILES_STOREAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 
 
@@ -226,22 +227,22 @@ import dj_database_url
 
 
 DATABASES = {
-    'default': dj_database_url.config(default='postgresql://postgres:postgres@localhost/postgres',conn_max_age=600)
+    'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'),conn_max_age=600)
 }
 
 
 ### ssl and tsl
 
-SECURE_HSTS_SECONDS = 31536000  # Enable HTTP Strict Transport Security
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = True
-SECURE_BROWSER_XSS_FILTER = True
-SECURE_CONTENT_TYPE_NOSNIFF = True
+if "test" not in sys.argv:
+
+    SECURE_HSTS_SECONDS = 31536000  # Enable HTTP Strict Transport Security
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 
-## middle ware settings 
-
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
