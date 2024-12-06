@@ -24,6 +24,10 @@ from ..models import Blog
 
 from .utils import BlogSerializer , BlogPaginator
 
+### llm import 
+
+from ..llm import get_tags
+
 
 @login_required
 def home_page(request):
@@ -38,6 +42,8 @@ def create_blog_page(request):
             title = form.cleaned_data['title']
             content = form.cleaned_data['content']
             blog = Blog.objects.create(title=title,content=content)
+            blog.tags = get_tags(content)
+            blog.save()
             if blog:
                 return redirect('home')
             else:

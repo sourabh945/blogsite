@@ -110,9 +110,9 @@ class Blog(models.Model):
         blank=True,
     )
 
-@receiver(signal=models.signals.pre_save,sender=Blog)
-def set_tags(sender,instance,*args,**kwargs):
-    if not instance.tags:
-        instance.tags = get_tags(instance.content)
+# @receiver(signal=models.signals.pre_save,sender=Blog)
+# def set_tags(sender,instance,*args,**kwargs):
+#     if not instance.tags:
+#         instance.tags = get_tags(instance.content)
 
 
