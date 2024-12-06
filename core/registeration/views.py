@@ -33,7 +33,7 @@ def signup_page(request):
             try:
                 user = User.objects.create(username=form.cleaned_data['username'],email=form.cleaned_data['email'],name=form.cleaned_data['name'],password=form.cleaned_data['password'])
                 login(request,user)
-                return redirect(HOME_PAGE)
+                return redirect('tags')
             except Exception as error:
                 messages.error(request=request,message='Username or email is already exists',extra_tags='login')
                 return redirect('tags')
