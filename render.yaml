@@ -1,10 +1,16 @@
 databases:
+
   - name: blogsitedb
     plan: free
     databaseName: blogsite
     user: blogsiteuser
 
+  - name: redis_
+    type: redis
+    plan: free
+
 services:
+
   - type: web
     plan: free
     name: blogsite
@@ -20,3 +26,28 @@ services:
         generateValue: true
       - key: WEB_CONCURRENCY
         value: 4
+      - key: REDIS_URL
+        sync: true
+
+  - type: worker
+    name: rq-worker
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python manage.py rqworker default"
+    envVars:
+      -key: REDIS_URL
+      fromDatabase:
+        name: redis_
+        property: connectionString
+        sync: true
+    plan: free
+
+  - name: rq-scheduler
+    type: worker
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python manage.py rqscheduler"
+    envVars:
+      - key: REDIS_URL
+        sync: true
+    plan: free

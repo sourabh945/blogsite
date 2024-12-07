@@ -6,7 +6,7 @@ from rest_framework.authtoken.models import Token
 
 from .models import User , Blog
 
-from .llm import get_tags
+from .llm import fetch_tags
 
 import json
 
@@ -82,6 +82,7 @@ class ApiTest(TestCase):
         self.assertEqual(count,int(response.data['count']/page_size) + int(response.data['count']%page_size))
 
 
+
 class LLM_test(TestCase):
 
     def setUp(self):
@@ -118,7 +119,7 @@ class LLM_test(TestCase):
         )
 
     def test_direct_llm(self):
-        tags = get_tags(self.test_blog)
+        tags = fetch_tags(self.test_blog)
 
 
 class UI_COMPONENTS_TEST(TestCase):

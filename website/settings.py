@@ -187,7 +187,7 @@ MAX_PAGE_SIZE = 100
 
 LLM_API_KEY = os.environ.get('LLM_API_KEY')
 
-LLM_API_URL = 'https://api.cohara.ai/v1/chat'
+LLM_API_URL = 'https://api.cohere.com/v1/chat'
 
 LLM_MODEL = 'command-r-08-2024'
 
@@ -246,3 +246,13 @@ if "test" not in sys.argv:
     CSRF_COOKIE_SECURE = True
 
 
+### django-q installations 
+
+INSTALLED_APPS += ['django_rq',]
+
+RQ_QUEUES = {
+    'default': {
+        'URL': os.getenv('REDIS_URL','redis://localhost:6379/0'),
+        'DEFAULT_TIMEOUT': 360,
+    },
+}

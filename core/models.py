@@ -13,9 +13,6 @@ from django.conf import settings
 
 from .utils import UserManager
 
-### import from the llm 
-
-from .llm import get_tags
 
 
 class User(AbstractBaseUser):
@@ -108,11 +105,5 @@ class Blog(models.Model):
     tags = models.JSONField(
         verbose_name='tags',
         blank=True,
+        null=True,
     )
-
-@receiver(signal=models.signals.pre_save,sender=Blog)
-def set_tags(sender,instance,*args,**kwargs):
-    if not instance.tags:
-        instance.tags = get_tags(instance.content)
-
-

@@ -9,7 +9,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
-
+from django.db import transaction
 ### models imports 
 
 from ..models import Blog 
@@ -21,6 +21,11 @@ from .utils.formatter import Blog_foramtter
 ### import form settings 
 
 from django.conf import settings
+
+### import llm
+ 
+from ..llm import get_tags
+
 
 ### token generator 
 class AuthToken(ObtainAuthToken):
@@ -72,7 +77,11 @@ def posts(request):
         except:
             return Response({'error':'bad request'},status=status.HTTP_400_BAD_REQUEST)
 
-        blog = Blog.objects.create(title=title,content=content,author=request.user)
+        with transaction.atomic():
+            blog = Blog.objects.create(title=title,content=content,author=request.user)
+
+            transaction.on_commit(lambda: get_tags(blog))
+
         return Response({'id':blog.id},status=status.HTTP_201_CREATED)
 
     

@@ -2,7 +2,8 @@ from django.shortcuts import render , redirect
 from django.http import HttpResponseBadRequest , HttpResponseServerError , Http404
 from django.contrib.auth.decorators import login_required
 from django.middleware.csrf import get_token
-from django.db.models import Q
+from django.db.models import Q 
+from django.db import transaction
 
 ### import settings 
 
@@ -41,7 +42,9 @@ def create_blog_page(request):
         if form.is_valid():
             title = form.cleaned_data['title']
             content = form.cleaned_data['content']
-            blog = Blog.objects.create(title=title,content=content,author=request.user)
+            with transaction.atomic():
+                blog = Blog.objects.create(title=title,content=content,author=request.user)
+                transaction.on_commit(lambda: get_tags(blog))
             if blog:
                 return redirect('home')
             else:
