@@ -246,13 +246,11 @@ if "test" not in sys.argv:
     CSRF_COOKIE_SECURE = True
 
 
-### django-q installations 
+### celery imports 
 
-INSTALLED_APPS += ['django_rq',]
-
-RQ_QUEUES = {
-    'default': {
-        'URL': os.getenv('REDIS_URL','redis://localhost:6379/0'),
-        'DEFAULT_TIMEOUT': 360,
-    },
-}
+# Celery settings
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')  # Use Redis as the broker
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_BROKER_URL')  # Store results in Redis (optional)
+CELERY_ACCEPT_CONTENT = ['json']  # Task serialization format
+CELERY_TASK_SERIALIZER = 'json'  # How tasks should be serialized
+CELERY_TIMEZONE = 'UTC'  # Timezone for scheduling tasks

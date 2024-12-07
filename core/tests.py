@@ -2,13 +2,15 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework.authtoken.models import Token
-from django_rq import get_worker
+import pytest
+from unittest.mock import patch
 
+from requests.models import Response
 
 
 from .models import User , Blog
 
-from .llm import fetch_tags
+from .llm import get_tags
 
 import json
 
@@ -86,44 +88,9 @@ class ApiTest(TestCase):
         self.assertEqual(len(response.data['results']),page_size)
         self.assertEqual(count,int(response.data['count']/page_size) + int(response.data['count']%page_size))
 
-class LLM_TEST(TestCase):
-    ## i use api to test this 
-    def setUp(self):
-        self.client = APIClient()
-        self.user = User.objects.create(
-            username='sourabh945',
-            name='sourabh',
-            email='sheokand.sourabh.anil@gmail.com',
-            password='12345678',
-            tags=choices(tl,k=5)
-        )
-        response = Token.objects.get_or_create(user=self.user)
-        self.token = response[0]
-        self.blog = Blog.objects.create(
-            title='test blog initial',
-            content='this is a test blog',
-            author=self.user,
-            tags=choices(tl,k=5)
-        )
-
-    # def test_llm_integration(self):
-    #     blog = {
-    #         'title':'test title',
-    #         'content':'this is a test blog for test'
-    #     }
-    #     response = self.client.post('/api/posts/',data=blog,HTTP_AUTHORIZATION=f'Token {self.token.key}')
-    #     self.assertEqual(response.status_code,201)
-    #     self.assertNotEqual(response.data['id'],self.blog.id)
-    #     blog = Blog.objects.get(id=response.data['id'])
-    #     worker = get_worker('default')
-    #     worker.work(burst=True)
-    #     blog.refresh_from_db()
-    #     self.assertEqual(blog.title,"test title")
-    #     self.assertNotEqual(blog.tags,None)
-    #     print(blog.tags)
 
 
-class LLM_test_alone(TestCase):
+class TestCeleryTask(TestCase):
 
     def setUp(self):
         self.test_blog = """Introduction to Quantum Computing
@@ -150,16 +117,32 @@ class LLM_test_alone(TestCase):
             email='sheokand.sourabh@gmail.com',
             password='12345678'
         )
-        response = Token.objects.get_or_create(user=self.user)
-        self.token = response[0]
-        self.blog = Blog.objects.create(
-            title='test blog initial',
-            content='this is a test blog',
-            author=self.user
-        )
+        
 
-    def test_direct_llm(self):
-        tags = fetch_tags(self.test_blog)
+    @pytest.mark.django_db
+    def test_update_object_with_api_data(self):
+        # Step 1: Create a test object in the database
+        obj = Blog.objects.create(title='test blog',content=self.test_blog,author=self.user)
+
+        # Step 2: Mock the API response
+        mock_response = Response()
+        mock_response.status_code = 200
+        mock_response._content = b'{"new_value": "updated_value"}'
+
+        # Step 3: Use patch to mock 'requests.get' to return the mock response
+        with patch('requests.post', return_value=mock_response):
+            # Step 4: Call the Celery task (this will run synchronously in tests)
+            result = get_tags(obj.id,obj.content)
+
+        # Step 5: Check if the result is what we expect
+        self.assertIn("Object updated successfully", result)
+
+        # Step 6: Fetch the object again from the database
+        obj.refresh_from_db()
+
+        # Step 7: Assert that the object's field has been updated
+        self.assertEqual(obj.some_field, "updated_value")
+
 
 
 class UI_COMPONENTS_TEST(TestCase):

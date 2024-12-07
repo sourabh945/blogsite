@@ -42,9 +42,8 @@ def create_blog_page(request):
         if form.is_valid():
             title = form.cleaned_data['title']
             content = form.cleaned_data['content']
-            with transaction.atomic():
-                blog = Blog.objects.create(title=title,content=content,author=request.user)
-                transaction.on_commit(lambda: get_tags(blog))
+            blog = Blog.objects.create(title=title,content=content,author=request.user)
+            get_tags.delay(blog.id,content)
             if blog:
                 return redirect('home')
             else:

@@ -1,1 +1,1 @@
-from .tager import get_tags , fetch_tags
+from .tager import get_tags 

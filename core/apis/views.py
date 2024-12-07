@@ -77,9 +77,8 @@ def posts(request):
         except:
             return Response({'error':'bad request'},status=status.HTTP_400_BAD_REQUEST)
 
-        with transaction.atomic():
-            blog = Blog.objects.create(title=title,content=content,author=request.user)
-            transaction.on_commit(lambda: get_tags(blog))
+        blog = Blog.objects.create(title=title,content=content,author=request.user)
+        get_tags.delay(blog.id,content)
 
         return Response({'id':blog.id},status=status.HTTP_201_CREATED)
 

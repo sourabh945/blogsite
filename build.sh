@@ -2,17 +2,34 @@
 # Exit on error
 set -o errexit
 
-# Modify this line as needed for your package manager (pip, poetry, etc.)
+
+# Install project dependencies
+echo "Installing dependencies..."
 pip install -r requirements.txt
 
 python manage.py makemigrations core
 
-# Convert static asset files
-python manage.py collectstatic --no-input
-
-# Apply any outstanding database migrations
+# Run Django migrations
+echo "Running Django migrations..."
 python manage.py migrate
 
-### starting the django-rq
+# Collect static files (if applicable)
+echo "Collecting static files..."
+python manage.py collectstatic --noinput
 
-python manage.py rqworker default
+# Start the Django development server (optional, for local dev environment)
+echo "Starting Django development server..."
+python manage.py runserver &
+
+# Start the Celery worker
+echo "Starting Celery worker..."
+celery -A your_project_name worker --loglevel=info &
+
+# Optionally, you can also start the Celery beat scheduler if you need periodic tasks
+# echo "Starting Celery beat scheduler..."
+# celery -A your_project_name beat --loglevel=info &
+
+# Wait for background processes to finish (you can change this logic depending on your deployment setup)
+wait
+
+

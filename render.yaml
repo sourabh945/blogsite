@@ -5,12 +5,22 @@ databases:
     databaseName: blogsite
     user: blogsiteuser
 
-  - name: blogsite_redis
-    databaseName: blogsite_redis
-    type: redis
-    plan: free
 
 services:
+
+  - type: worker
+    name: rq-worker
+    region: ohio
+    runtime: python
+    buildCommand: 'pip install -r requirements.txt'
+    startCommand: "celery --app website worker --loglevel info --concurrency=4"
+    autoDeploy: false
+    envVars: 
+      - key: CELERY_BROKER_URL
+        fromService:
+          name: cleery-redis
+          type: redis
+          property: connectionString
 
   - type: web
     plan: free
@@ -27,39 +37,30 @@ services:
         generateValue: true
       - key: WEB_CONCURRENCY
         value: 4
-      - key: REDIS_URL
-        fromDatabase:
-          name: blogsite_redis
+      - key: CELERY_BROKER_URL
+        fromService: 
+          name: celery-redis
+          type: redis
           property: connectionString
-        sync: truer
+
+  - type: web
+    name: flower
+    region: ohio
+    plan: free
+    runtime: python
+    buildCommand: "pip install -r requirements"
+    startCommand: "celery flower --app tasks --flower"
+    autoDeploy: false
+    envVars:
+        - key: CELERY_BROKER_URL
+          fromService:
+            type: redis
+            name: celery-redis
+            property: connectionString
 
   - type: redis
-    name: my-redis
-    ipAllowList:
-      - source: 0.0.0.0/0
-        description: everywhere
-    plan: free
-    maxmemoryPolicy: noeviction
-
-  - type: worker
-    name: rq-worker
-    env: python
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "python manage.py rqworker default"
-    envVars:
-      -key: REDIS_URL
-      fromDatabase:
-        name: redis_
-        property: connectionString
-        sync: true
-    plan: free
-
-  - name: rq-scheduler
-    type: worker
-    env: python
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "python manage.py rqscheduler"
-    envVars:
-      - key: REDIS_URL
-        sync: true
-    plan: free
+    name: celery-redis
+    region: ohio
+    plan: starter # we choose a plan with persistence to ensure tasks are not lost upon restart
+    maxmemoryPolicy: noeviction # recommended policy for queues
+    ipAllowList: [] # only allow internal connections
