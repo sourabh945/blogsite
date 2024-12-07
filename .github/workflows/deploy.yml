@@ -44,6 +44,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
+    - name: Migrate Database
+      run: |
+        python manage.py makemigrations
+        python manage.py migrate
+
     # 4. Wait for PostgreSQL to be ready
     - name: Wait for PostgreSQL
       run: |
