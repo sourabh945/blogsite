@@ -56,7 +56,7 @@ jobs:
     - name: Migrate Database
       env:
         DATABASE_URL: postgres://testuser:testpassword@localhost:5432/testdb
-        SECRET_KEY: {{ env.SECRET_KEY }}
+        SECRET_KEY: {{ secrets.SECRET_KEY }}
       run: |
         python manage.py makemigrations
         python manage.py migrate
@@ -64,9 +64,9 @@ jobs:
     # 6. Run tests
     - name: Run Tests
       env:
-        SECRET_KEY: {{ env.SECRET_KEY }}
+        SECRET_KEY: {{ secrets.SECRET_KEY }}
         DEBUG: false
-        LLM_API_KEY: {{ env.LLM_API_KEY }}
+        LLM_API_KEY: {{ secrets.LLM_API_KEY }}
         DATABASE_URL: postgres://testuser:testpassword@localhost:5432/testdb
       run: |
         python manage.py test 
