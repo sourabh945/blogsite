@@ -33,6 +33,13 @@ services:
           property: connectionString
         sync: truer
 
+  - type: redis
+    name: my-redis
+    ipAllowList:
+      - source: 0.0.0.0/0
+        description: everywhere
+    plan: free
+    maxmemoryPolicy: noeviction
 
   - type: worker
     name: rq-worker
