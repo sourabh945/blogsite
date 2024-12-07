@@ -43,20 +43,7 @@ services:
           type: redis
           property: connectionString
 
-  - type: web
-    name: flower
-    region: ohio
-    plan: free
-    runtime: python
-    buildCommand: "pip install -r requirements"
-    startCommand: "celery flower --app tasks --flower"
-    autoDeploy: false
-    envVars:
-        - key: CELERY_BROKER_URL
-          fromService:
-            type: redis
-            name: celery-redis
-            property: connectionString
+
 
   - type: redis
     name: celery-redis
