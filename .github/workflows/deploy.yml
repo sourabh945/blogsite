@@ -54,6 +54,8 @@ jobs:
         done
 
     - name: Migrate Database
+      env:
+        DATABASE_URL: postgres://testuser:testpassword@localhost:5432/testdb
       run: |
         python manage.py makemigrations
         python manage.py migrate
