@@ -2,6 +2,8 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework.authtoken.models import Token
+from django_rq import get_worker
+
 
 
 from .models import User , Blog
@@ -52,10 +54,13 @@ class ApiTest(TestCase):
         response = self.client.post('/api/posts/',data=blog,HTTP_AUTHORIZATION=f'Token {self.token.key}')
         self.assertEqual(response.status_code,201)
         self.assertNotEqual(response.data['id'],self.blog.id)
+        blog = Blog.objects.get(id=response.data['id'])
+        blog.refresh_from_db()
+        self.assertEqual(blog.title,"test title")
+        # self.assertNotEqual(blog.tags,None)
 
 
     def test_get_blog_by_id(self):
-        
         response = self.client.get(f'/api/posts/{self.blog.id}/',HTTP_AUTHORIZATION=f'Token {self.token.key}')
         self.assertEqual(response.status_code,200)
         self.assertEqual(response.data['title'],'test blog initial')
@@ -81,9 +86,44 @@ class ApiTest(TestCase):
         self.assertEqual(len(response.data['results']),page_size)
         self.assertEqual(count,int(response.data['count']/page_size) + int(response.data['count']%page_size))
 
+class LLM_TEST(TestCase):
+    ## i use api to test this 
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create(
+            username='sourabh945',
+            name='sourabh',
+            email='sheokand.sourabh.anil@gmail.com',
+            password='12345678',
+            tags=choices(tl,k=5)
+        )
+        response = Token.objects.get_or_create(user=self.user)
+        self.token = response[0]
+        self.blog = Blog.objects.create(
+            title='test blog initial',
+            content='this is a test blog',
+            author=self.user,
+            tags=choices(tl,k=5)
+        )
+
+    # def test_llm_integration(self):
+    #     blog = {
+    #         'title':'test title',
+    #         'content':'this is a test blog for test'
+    #     }
+    #     response = self.client.post('/api/posts/',data=blog,HTTP_AUTHORIZATION=f'Token {self.token.key}')
+    #     self.assertEqual(response.status_code,201)
+    #     self.assertNotEqual(response.data['id'],self.blog.id)
+    #     blog = Blog.objects.get(id=response.data['id'])
+    #     worker = get_worker('default')
+    #     worker.work(burst=True)
+    #     blog.refresh_from_db()
+    #     self.assertEqual(blog.title,"test title")
+    #     self.assertNotEqual(blog.tags,None)
+    #     print(blog.tags)
 
 
-class LLM_test(TestCase):
+class LLM_test_alone(TestCase):
 
     def setUp(self):
         self.test_blog = """Introduction to Quantum Computing

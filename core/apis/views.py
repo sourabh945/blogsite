@@ -79,7 +79,6 @@ def posts(request):
 
         with transaction.atomic():
             blog = Blog.objects.create(title=title,content=content,author=request.user)
-
             transaction.on_commit(lambda: get_tags(blog))
 
         return Response({'id':blog.id},status=status.HTTP_201_CREATED)

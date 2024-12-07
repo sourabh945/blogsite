@@ -26,7 +26,6 @@ from tenacity import retry, stop_after_attempt , wait_fixed
 def fetch_tags(text):
         try:
             url = settings.LLM_API_URL
-            print(url)
             return requests.post(url,
                                 headers={
                                     "Authorization": f"bearer {settings.LLM_API_KEY}",
@@ -39,7 +38,7 @@ def fetch_tags(text):
                                     "message":text
                                 })
         except Exception as error:
-            # Log the error
+            print(error)
             raise  error
         
 
@@ -53,6 +52,7 @@ def apply_tags(id,content):
             blog.tags = tags 
             blog.save()
         except Blog.DoesNotExist:
+            print('error')
             raise Blog.DoesNotExist('at apply tags')
         
 
