@@ -43,7 +43,7 @@ def create_blog_page(request):
             title = form.cleaned_data['title']
             content = form.cleaned_data['content']
             blog = Blog.objects.create(title=title,content=content,author=request.user)
-            get_tags.delay(blog.id,content)
+            get_tags(blog.id,content)
             if blog:
                 return redirect('home')
             else:

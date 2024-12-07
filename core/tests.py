@@ -2,15 +2,8 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework.authtoken.models import Token
-import pytest
-from unittest.mock import patch
-
-from requests.models import Response
-
 
 from .models import User , Blog
-
-from .llm import get_tags
 
 import json
 
@@ -51,15 +44,14 @@ class ApiTest(TestCase):
     def test_add_blog(self):
         blog = {
             'title':'test title',
-            'content':'this is a test blog for test'
+            'content':'this is a test blog for test and its about ai '
         }
         response = self.client.post('/api/posts/',data=blog,HTTP_AUTHORIZATION=f'Token {self.token.key}')
         self.assertEqual(response.status_code,201)
         self.assertNotEqual(response.data['id'],self.blog.id)
         blog = Blog.objects.get(id=response.data['id'])
-        blog.refresh_from_db()
         self.assertEqual(blog.title,"test title")
-        # self.assertNotEqual(blog.tags,None)
+        self.assertNotEqual(blog.tags,None)
 
 
     def test_get_blog_by_id(self):
@@ -90,58 +82,58 @@ class ApiTest(TestCase):
 
 
 
-class TestCeleryTask(TestCase):
+# class TestCeleryTask(TestCase):
 
-    def setUp(self):
-        self.test_blog = """Introduction to Quantum Computing
-                            Quantum computing is a revolutionary field of science and technology that leverages the principles of quantum mechanics to perform computations. Unlike classical computers, which process data in binary (0s and 1s), quantum computers use qubits—quantum bits that can exist in multiple states simultaneously due to superposition. This capability allows quantum computers to solve complex problems much faster than traditional computers.
+#     def setUp(self):
+#         self.test_blog = """Introduction to Quantum Computing
+#                             Quantum computing is a revolutionary field of science and technology that leverages the principles of quantum mechanics to perform computations. Unlike classical computers, which process data in binary (0s and 1s), quantum computers use qubits—quantum bits that can exist in multiple states simultaneously due to superposition. This capability allows quantum computers to solve complex problems much faster than traditional computers.
 
-                            How Quantum Computing Works
-                            Qubits and Superposition: Qubits can represent both 0 and 1 simultaneously, thanks to the quantum property of superposition. This allows quantum computers to process vast amounts of data in parallel.
-                            Entanglement: Quantum entanglement enables qubits to be interconnected in such a way that the state of one qubit can instantly influence another, even if they are far apart. This boosts computational power exponentially.
-                            Quantum Gates: Just like classical computers use logic gates, quantum computers use quantum gates to manipulate qubit states, enabling complex operations.
-                            Applications of Quantum Computing
-                            Cryptography: Quantum computing poses a threat to traditional cryptographic systems like RSA, as it can factor large numbers efficiently. Post-quantum cryptography is being developed to counteract this threat.
-                            Drug Discovery: Simulating molecular interactions is exponentially faster, enabling breakthroughs in pharmaceutical research.
-                            Optimization Problems: Quantum algorithms can solve optimization problems in logistics, finance, and supply chain management faster than classical counterparts.
-                            Challenges in Quantum Computing
-                            Error Rates: Qubits are highly sensitive to environmental disturbances, causing frequent errors. Error correction is a major area of research.
-                            Scalability: Building large-scale quantum computers with many stable qubits is a significant engineering challenge.
-                            Cost and Accessibility: Quantum computers are expensive to develop and maintain, limiting access to large institutions and research labs.
-                            Future Prospects
-                            The future of quantum computing looks promising, with tech giants like IBM, Google, and Microsoft investing heavily in quantum research. As technology advances, we may see quantum computing becoming a part of everyday applications, revolutionizing industries like healthcare, finance, and artificial intelligence.
-                            """
-        self.user = User.objects.create(
-            username='sourabh9',
-            name='sourabh',
-            email='sheokand.sourabh@gmail.com',
-            password='12345678'
-        )
+#                             How Quantum Computing Works
+#                             Qubits and Superposition: Qubits can represent both 0 and 1 simultaneously, thanks to the quantum property of superposition. This allows quantum computers to process vast amounts of data in parallel.
+#                             Entanglement: Quantum entanglement enables qubits to be interconnected in such a way that the state of one qubit can instantly influence another, even if they are far apart. This boosts computational power exponentially.
+#                             Quantum Gates: Just like classical computers use logic gates, quantum computers use quantum gates to manipulate qubit states, enabling complex operations.
+#                             Applications of Quantum Computing
+#                             Cryptography: Quantum computing poses a threat to traditional cryptographic systems like RSA, as it can factor large numbers efficiently. Post-quantum cryptography is being developed to counteract this threat.
+#                             Drug Discovery: Simulating molecular interactions is exponentially faster, enabling breakthroughs in pharmaceutical research.
+#                             Optimization Problems: Quantum algorithms can solve optimization problems in logistics, finance, and supply chain management faster than classical counterparts.
+#                             Challenges in Quantum Computing
+#                             Error Rates: Qubits are highly sensitive to environmental disturbances, causing frequent errors. Error correction is a major area of research.
+#                             Scalability: Building large-scale quantum computers with many stable qubits is a significant engineering challenge.
+#                             Cost and Accessibility: Quantum computers are expensive to develop and maintain, limiting access to large institutions and research labs.
+#                             Future Prospects
+#                             The future of quantum computing looks promising, with tech giants like IBM, Google, and Microsoft investing heavily in quantum research. As technology advances, we may see quantum computing becoming a part of everyday applications, revolutionizing industries like healthcare, finance, and artificial intelligence.
+#                             """
+#         self.user = User.objects.create(
+#             username='sourabh9',
+#             name='sourabh',
+#             email='sheokand.sourabh@gmail.com',
+#             password='12345678'
+#         )
         
 
-    @pytest.mark.django_db
-    def test_update_object_with_api_data(self):
-        # Step 1: Create a test object in the database
-        obj = Blog.objects.create(title='test blog',content=self.test_blog,author=self.user)
+#     @pytest.mark.django_db
+#     def test_update_object_with_api_data(self):
+#         # Step 1: Create a test object in the database
+#         obj = Blog.objects.create(title='test blog',content=self.test_blog,author=self.user)
 
-        # Step 2: Mock the API response
-        mock_response = Response()
-        mock_response.status_code = 200
-        mock_response._content = b'{"new_value": "updated_value"}'
+#         # Step 2: Mock the API response
+#         mock_response = Response()
+#         mock_response.status_code = 200
+#         mock_response._content = b'{"new_value": "updated_value"}'
 
-        # Step 3: Use patch to mock 'requests.get' to return the mock response
-        with patch('requests.post', return_value=mock_response):
-            # Step 4: Call the Celery task (this will run synchronously in tests)
-            result = get_tags(obj.id,obj.content)
+#         # Step 3: Use patch to mock 'requests.get' to return the mock response
+#         with patch('requests.post', return_value=mock_response):
+#             # Step 4: Call the Celery task (this will run synchronously in tests)
+#             result = get_tags(obj.id,obj.content)
 
-        # Step 5: Check if the result is what we expect
-        self.assertIn("Object updated successfully", result)
+#         # Step 5: Check if the result is what we expect
+#         self.assertIn("Object updated successfully", result)
 
-        # Step 6: Fetch the object again from the database
-        obj.refresh_from_db()
+#         # Step 6: Fetch the object again from the database
+#         obj.refresh_from_db()
 
-        # Step 7: Assert that the object's field has been updated
-        self.assertEqual(obj.some_field, "updated_value")
+#         # Step 7: Assert that the object's field has been updated
+#         self.assertEqual(obj.some_field, "updated_value")
 
 
 

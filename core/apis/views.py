@@ -78,7 +78,7 @@ def posts(request):
             return Response({'error':'bad request'},status=status.HTTP_400_BAD_REQUEST)
 
         blog = Blog.objects.create(title=title,content=content,author=request.user)
-        get_tags.delay(blog.id,content)
+        get_tags(blog.id,content)
 
         return Response({'id':blog.id},status=status.HTTP_201_CREATED)
 

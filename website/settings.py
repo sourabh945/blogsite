@@ -28,9 +28,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = [os.getenv("RENDER_EXTERNAL_HOSTNAME","")]
+ALLOWED_HOSTS = [os.getenv("RENDER_EXTERNAL_HOSTNAME","127.0.0.1")]
 
 
 # Application definition
@@ -187,7 +187,7 @@ MAX_PAGE_SIZE = 100
 
 LLM_API_KEY = os.environ.get('LLM_API_KEY')
 
-LLM_API_URL = 'https://api.cohere.com/v1/chat'
+LLM_API_URL = 'https://api.cohere.ai/v1/chat'
 
 LLM_MODEL = 'command-r-08-2024'
 
@@ -203,9 +203,8 @@ TAG_LIST = [
     "Cryptocurrency", "Fintech", "Leadership", "Economics", "Investments", 
     "Web Development", "Software Engineering", "Python", "JavaScript", 
     "Data Science", "Cybersecurity", "Open Source", "DevOps", 
-    "Internet of Things (IoT)", "Cloud Computing","Junk","Random","Personal"
+    "Internet of Things (IoT)", "Cloud Computing","Junk","Random","Personal","Test"
 ]
-
 
 LLM_PRE_PROMPT = f'can you characterize the given input by assign them atmost five tags from the following tags list. And return the output just tags seperated by comman nothing else. Tags List: {str(TAG_LIST)}',
 
@@ -246,11 +245,3 @@ if "test" not in sys.argv:
     CSRF_COOKIE_SECURE = True
 
 
-### celery imports 
-
-# Celery settings
-CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')  # Use Redis as the broker
-CELERY_RESULT_BACKEND = os.environ.get('CELERY_BROKER_URL')  # Store results in Redis (optional)
-CELERY_ACCEPT_CONTENT = ['json']  # Task serialization format
-CELERY_TASK_SERIALIZER = 'json'  # How tasks should be serialized
-CELERY_TIMEZONE = 'UTC'  # Timezone for scheduling tasks
