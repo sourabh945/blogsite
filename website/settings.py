@@ -232,7 +232,7 @@ DATABASES = {
 
 ### ssl and tsl
 
-if "test" not in sys.argv:
+if "test" not in sys.argv and os.environ.get('TEST_RUNNING') != 'YES':
 
     SECURE_HSTS_SECONDS = 31536000  # Enable HTTP Strict Transport Security
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
