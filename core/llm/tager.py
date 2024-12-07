@@ -1,4 +1,5 @@
 ### local import 
+from django.http import HttpResponseBadRequest
 
 from .utils import filter_tags
 
@@ -23,13 +24,13 @@ def get_tags(self,id,content):
     try:
         response = requests.post(url=settings.LLM_API_URL,
                                  headers={
-                                     'Authorization':f'Bearer {settings.LLM_API_KEY}',
+                                     'Authorization': f'Bearer {settings.LLM_API_KEY}',
                                      'Content-Type':'application/json',
                                      'accept':'application/json'
                                  },
                                  json={
                                      'model':settings.LLM_MODEL,
-                                     'prompt':settings.LLM_PRE_PROMPT,
+                                     'preamble':settings.LLM_PRE_PROMPT,
                                      "message":content
                                  })
         if response.status_code == 200:
@@ -42,5 +43,5 @@ def get_tags(self,id,content):
     except Blog.DoesNotExist as error : 
         raise error
     except Exception as error:
-        print(error)
+        return HttpResponseBadRequest('bad request sourabh')
         self.retry(countdown=60)
