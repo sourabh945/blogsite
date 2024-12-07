@@ -29,7 +29,6 @@ def get_tags(id,content):
                 "preamble": f'{settings.LLM_PRE_PROMPT}',
                 "message": str(content)
             })
-        print(response.status_code)
         if response.status_code == 200:
             filtered_tags = filter_tags(response)
             try:
