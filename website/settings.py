@@ -232,7 +232,7 @@ DATABASES = {
 
 ### ssl and tsl
 
-if "test" not in sys.argv and False:
+if "test" not in sys.argv:
 
     SECURE_HSTS_SECONDS = 31536000  # Enable HTTP Strict Transport Security
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
