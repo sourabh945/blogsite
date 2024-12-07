@@ -27,9 +27,9 @@ urlpatterns += ui_urls
 ### adding index page url
 
 from django.urls import path 
-from .views import index
+from .views import index_page
 
 urlpatterns += [
-    path('',index,name='index'),
+    path("/",index_page,name='index'),
 ]
 

@@ -47,7 +47,6 @@ def login_page(request):
         form = login_form(request.POST)
         if form.is_valid():
             try: 
-                print(form.cleaned_data['username_or_email'])
                 user = User.objects.get(Q(username=form.cleaned_data['username_or_email']) | Q(email=form.cleaned_data['username_or_email']))
                 password = form.cleaned_data['password']
                 user = authenticate(request,username=user.username,password=password)

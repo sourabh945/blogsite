@@ -28,9 +28,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = [os.getenv("RENDER_EXTERNAL_HOSTNAME","127.0.0.1")]
+ALLOWED_HOSTS = [os.getenv("RENDER_EXTERNAL_HOSTNAME","")]
 
 
 # Application definition
@@ -232,7 +232,7 @@ DATABASES = {
 
 ### ssl and tsl
 
-if "test" not in sys.argv:
+if "test" not in sys.argv and False:
 
     SECURE_HSTS_SECONDS = 31536000  # Enable HTTP Strict Transport Security
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
