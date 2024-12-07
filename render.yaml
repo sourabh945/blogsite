@@ -13,7 +13,7 @@ services:
     region: ohio
     runtime: python
     buildCommand: 'pip install -r requirements.txt'
-    startCommand: "celery --app website worker --loglevel info --concurrency=4"
+    startCommand: "python -m celery --app website worker --loglevel info --concurrency=4"
     autoDeploy: false
     envVars: 
       - key: CELERY_BROKER_URL
@@ -28,6 +28,7 @@ services:
     runtime: python
     buildCommand: "./build.sh"
     startCommand: "python -m gunicorn website.asgi:application -k uvicorn.workers.UvicornWorker"
+    # startCommand: 'python -m gunicorn website.asgi:application -w 4'
     envVars:
       - key: DATABASE_URL
         fromDatabase:
