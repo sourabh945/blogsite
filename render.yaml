@@ -5,7 +5,8 @@ databases:
     databaseName: blogsite
     user: blogsiteuser
 
-  - name: redis_
+  - name: blogsite_redis
+    databaseName: blogsite_redis
     type: redis
     plan: free
 
@@ -27,7 +28,11 @@ services:
       - key: WEB_CONCURRENCY
         value: 4
       - key: REDIS_URL
+        fromDatabase:
+          name: blogsite_redis
+          property: connectionString
         sync: truer
+
 
   - type: worker
     name: rq-worker
